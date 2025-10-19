@@ -1,0 +1,62 @@
+import tkinter as tk
+from tkinter import messagebox, simpledialog
+
+spots = []
+
+# Functions
+def add_spot():
+    name = simpledialog.askstring("Donor Name", "Enter donor name:")
+    if not name: return
+    age = simpledialog.askinteger("Age", "Enter donor age:")
+    contact = simpledialog.askstring("Contact", "Enter contact number:")
+    address = simpledialog.askstring("Address", "Enter full address:")
+    disease = simpledialog.askstring("Medical Info", "Any diseases or medical conditions? (if none, type 'None')") or 'None'
+    try:
+        lat = float(simpledialog.askstring("Latitude", "Enter latitude (e.g. 12.9716):"))
+        lon = float(simpledialog.askstring("Longitude", "Enter longitude (e.g. 77.5946):"))
+    except (TypeError, ValueError):
+        messagebox.showerror("Invalid Input", "Latitude and Longitude must be numbers.")
+        return
+    spot = {
+        'name': name,
+        'age': age,
+        'contact': contact,
+        'address': address,
+        'disease': disease,
+        'latitude': lat,
+        'longitude': lon
+    }
+    spots.append(spot)
+    refresh_spots()
+
+def refresh_spots():
+    listbox.delete(0, tk.END)
+    if not spots:
+        listbox.insert(tk.END, "No donors yet. Add one!")
+    else:
+        for s in spots:
+            listbox.insert(tk.END, f"Name: {s['name']} | Age: {s['age']} | Contact: {s['contact']}")
+            listbox.insert(tk.END, f"Address: {s['address']} | Diseases: {s['disease']}")
+            listbox.insert(tk.END, f"📍 Location: {s['latitude']}, {s['longitude']}")
+            listbox.insert(tk.END, "-"*70)
+
+# Main window
+root = tk.Tk()
+root.title("Blood Donor Locator")
+root.geometry("700x500")
+root.configure(bg='#f8f9fa')
+
+header = tk.Label(root, text="🩸 Blood Donor Locator", font=("Arial", 18, "bold"), bg='#4CAF50', fg='white')
+header.pack(fill=tk.X, pady=10)
+
+frame = tk.Frame(root, bg='white', padx=10, pady=10)
+frame.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)
+
+add_btn = tk.Button(frame, text="➕ Add Donor", command=add_spot, bg='#4CAF50', fg='white', padx=10, pady=5)
+add_btn.pack(pady=5)
+
+listbox = tk.Listbox(frame, width=100, height=20)
+listbox.pack(pady=10)
+
+refresh_spots()
+root.mainloop()
