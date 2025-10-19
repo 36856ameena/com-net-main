@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Quiz Score Analyser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📊 Online Quiz Score Analyser</h1>
+        <p>Track and analyse your quiz performance easily</p>
+    </header>
+    <main>
+        <h2>Quiz Scores</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Participant</th>
+                    <th>Score</th>
+                    <th>Max Score</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>John Doe</td>
+                    <td>8</td>
+                    <td>10</td>
+                    <td>80%</td>
+                </tr>
+                <tr>
+                    <td>Jane Smith</td>
+                    <td>9</td>
+                    <td>10</td>
+                    <td>90%</td>
+                </tr>
+                <tr>
+                    <td>Emily Johnson</td>
+                    <td>7</td>
+                    <td>10</td>
+                    <td>70%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="summary">
+            <h3>Summary</h3>
+            <p>Total Participants: 3</p>
+            <p>Average Score: 8/10 (80%)</p>
+            <p>Highest Score: 9/10 (90%)</p>
+            <p>Lowest Score: 7/10 (70%)</p>
+        </div>
+    </main>
+</body>
+</html>
