@@ -1,0 +1,125 @@
+
+import tkinter as tk
+from tkinter import messagebox, simpledialog
+import json
+import webbrowser
+import os
+
+spots = []
+
+DATA_FILE = "donors.json"
+
+# --- Functions --- #
+def save_data():
+    with open(DATA_FILE, "w") as f:
+        json.dump(spots, f, indent=4)
+
+def load_data():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            global spots
+            spots = json.load(f)
+
+def add_spot():
+    name = simpledialog.askstring("Donor Name", "Enter donor name:")
+    if not name: return
+    age = simpledialog.askinteger("Age", "Enter donor age:")
+    contact = simpledialog.askstring("Contact", "Enter contact number:")
+    address = simpledialog.askstring("Address", "Enter full address:")
+    disease = simpledialog.askstring("Medical Info", "Any diseases or medical conditions? (if none, type 'None')") or 'None'
+    try:
+        lat = float(simpledialog.askstring("Latitude", "Enter latitude (e.g. 12.9716):"))
+        lon = float(simpledialog.askstring("Longitude", "Enter longitude (e.g. 77.5946):"))
+    except (TypeError, ValueError):
+        messagebox.showerror("Invalid Input", "Latitude and Longitude must be numbers.")
+        return
+    spot = {
+        'name': name,
+        'age': age,
+        'contact': contact,
+        'address': address,
+        'disease': disease,
+        'latitude': lat,
+        'longitude': lon
+    }
+    spots.append(spot)
+    save_data()
+    refresh_spots()
+
+def refresh_spots(filter_text=""):
+    listbox.delete(0, tk.END)
+    filtered = [s for s in spots if filter_text.lower() in s['name'].lower() 
+                                     or filter_text.lower() in s['disease'].lower()
+                                     or filter_text == str(s['age'])]
+    if not filtered:
+        listbox.insert(tk.END, "No donors found. Add one!" if not spots else "No matching donors.")
+    else:
+        for idx, s in enumerate(filtered):
+            listbox.insert(tk.END, f"{idx+1}. Name: {s['name']} | Age: {s['age']} | Contact: {s['contact']}")
+            listbox.insert(tk.END, f"   Address: {s['address']} | Diseases: {s['disease']}")
+            listbox.insert(tk.END, f"   📍 Location: {s['latitude']}, {s['longitude']}")
+            listbox.insert(tk.END, "-"*70)
+
+def delete_spot():
+    selection = listbox.curselection()
+    if not selection:
+        messagebox.showwarning("Select Donor", "Please select a donor entry to delete.")
+        return
+    index = selection[0] // 4  # Each donor takes 4 lines
+    if index < len(spots):
+        confirm = messagebox.askyesno("Confirm Delete", f"Delete donor {spots[index]['name']}?")
+        if confirm:
+            spots.pop(index)
+            save_data()
+            refresh_spots()
+
+def search_spot():
+    query = simpledialog.askstring("Search Donor", "Enter name, age, or disease to search:")
+    if query is None: return
+    refresh_spots(query)
+
+def open_location():
+    selection = listbox.curselection()
+    if not selection:
+        messagebox.showwarning("Select Donor", "Please select a donor entry to view location.")
+        return
+    index = selection[0] // 4
+    if index < len(spots):
+        lat = spots[index]['latitude']
+        lon = spots[index]['longitude']
+        webbrowser.open(f"https://www.google.com/maps?q={lat},{lon}")
+
+# --- Main Window --- #
+root = tk.Tk()
+root.title("Blood Donor Locator")
+root.geometry("800x600")
+root.configure(bg='#f8f9fa')
+
+header = tk.Label(root, text="🩸 Blood Donor Locator", font=("Arial", 18, "bold"), bg='#4CAF50', fg='white')
+header.pack(fill=tk.X, pady=10)
+
+frame = tk.Frame(root, bg='white', padx=10, pady=10)
+frame.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)
+
+btn_frame = tk.Frame(frame, bg='white')
+btn_frame.pack(pady=5)
+
+add_btn = tk.Button(btn_frame, text="➕ Add Donor", command=add_spot, bg='#4CAF50', fg='white', padx=10, pady=5)
+add_btn.grid(row=0, column=0, padx=5)
+
+del_btn = tk.Button(btn_frame, text="🗑️ Delete Donor", command=delete_spot, bg='#f44336', fg='white', padx=10, pady=5)
+del_btn.grid(row=0, column=1, padx=5)
+
+search_btn = tk.Button(btn_frame, text="🔍 Search Donor", command=search_spot, bg='#2196F3', fg='white', padx=10, pady=5)
+search_btn.grid(row=0, column=2, padx=5)
+
+map_btn = tk.Button(btn_frame, text="🗺️ View Location", command=open_location, bg='#FF9800', fg='white', padx=10, pady=5)
+map_btn.grid(row=0, column=3, padx=5)
+
+listbox = tk.Listbox(frame, width=110, height=25)
+listbox.pack(pady=10)
+
+load_data()
+refresh_spots()
+root.mainloop()
+
